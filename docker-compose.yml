@@ -1,0 +1,26 @@
+services:
+  backend:
+    build: ./v-web-cw-backend
+    container_name: flask_backend
+    restart: always
+    deploy:
+      resources:
+        limits:
+          memory: 1G  
+        reservations:
+          memory: 512M  
+    environment:
+      - GUNICORN_CMD_ARGS=--bind=0.0.0.0:5000 --timeout=300 --graceful-timeout=300
+    ports:
+      - "5000:5000" 
+    expose:
+      - "5000"
+
+  frontend:
+    build: ./v-web-cw-frontend
+    container_name: react_frontend
+    ports:
+      - "80:80"
+    restart: always
+    depends_on:
+      - backend
