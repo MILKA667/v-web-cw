@@ -1,5 +1,5 @@
-import { createContext, ReactNode, useState, useContext } from "react";
-
+import { createContext, useState} from "react";
+import type { ReactNode } from "react";
 export type FileType = 'film' | 'serial' | 'anime' | 'music';
 
 interface FileTypeContextValue {

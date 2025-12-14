@@ -1,4 +1,4 @@
-import { createContext, use, useState } from "react";
+import { createContext, useState } from "react";
 
 interface FileContextValue {
   file: File | null;
