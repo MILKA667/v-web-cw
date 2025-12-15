@@ -1,26 +1,56 @@
+version: '3.8'
+
 services:
   backend:
     build: ./v-web-cw-backend
     container_name: flask_backend
     restart: always
-    deploy:
-      resources:
-        limits:
-          memory: 1G  
-        reservations:
-          memory: 512M  
     environment:
       - GUNICORN_CMD_ARGS=--bind=0.0.0.0:5000 --timeout=300 --graceful-timeout=300
-    ports:
-      - "5000:5000" 
     expose:
       - "5000"
+    networks:
+      - webnet
 
   frontend:
     build: ./v-web-cw-frontend
     container_name: react_frontend
-    ports:
-      - "80:80"
     restart: always
+    expose:
+      - "80"
+    networks:
+      - webnet
     depends_on:
       - backend
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx_proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - webnet
+
+  certbot:
+    image: certbot/certbot
+    container_name: certbot
+    volumes:
+      - ./certbot/www:/var/www/certbot
+      - ./certbot/conf:/etc/letsencrypt
+    entrypoint: >
+      sh -c "certbot certonly --webroot -w /var/www/certbot -d mediahunter.site --email coromyslov.andrey2005@gmail.com --agree-tos --no-eff-email"
+    networks:
+      - webnet
+
+networks:
+  webnet:
+    driver: bridge
