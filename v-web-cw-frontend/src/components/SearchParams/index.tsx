@@ -1,13 +1,16 @@
 import { useContext, useState } from "react";
 import { FileContext } from "../../contexts/FileContext";
 import './style.css'
-import { ResultContext , type Result} from "../../contexts/ResultContext";
+import { ResultContext, type Result } from "../../contexts/ResultContext";
 import FileTypeContext from "../../contexts/FileTypeContext";
+import { useNotification } from "../../contexts/NotificationContext";
 
+const API_URL = import.meta.env.VITE_API_URL;
 
 export default function SearchParams() {
+    const { showNotification } = useNotification();
     const { file } = useContext(FileContext)!
-    const { setResults , clearResults } = useContext(ResultContext)!
+    const { setResults, clearResults } = useContext(ResultContext)!
 
     const { fileType, setFileType } = useContext(FileTypeContext)!
 
@@ -17,10 +20,10 @@ export default function SearchParams() {
 
     function mapAuddToResults(data: any): Result[] {
         if (!data || !data.track) return [];
-    
+
         const track = data.track;
-    
-    
+
+
         const result: Result = {
             filename: track.title || "Неизвестный",
             image: track.images?.coverart,
@@ -34,7 +37,7 @@ export default function SearchParams() {
             artist: track.subtitle || null,
             previewUrl: track.url || undefined
         };
-    
+
         return [result];
     }
 
@@ -68,12 +71,11 @@ export default function SearchParams() {
 
     async function upload_file() {
         if (!file) {
-            setError("Вы не загрузили файл!");
+            showNotification('Вы не загрузили файл!', 'error')
             return;
         }
 
         setIsLoading(true);
-        setError("");
 
         try {
             const formData = new FormData();
@@ -81,17 +83,18 @@ export default function SearchParams() {
             let data: any;
             switch (fileType) {
                 case "anime":
+                    showNotification('Поиск аниме не доступен с российским IP', 'info')
                     formData.append("image", file);
                     response = await fetch("https://api.trace.moe/search", {
                         method: "POST",
                         body: formData
                     });
-
+                    data = await response.json();
                     if (!response.ok) {
-                        throw new Error("Ошибка при поиске аниме");
+                        showNotification(`${data.error}`, 'error')
+                        return
                     }
 
-                    data = await response.json();
                     console.log(data);
 
                     if (data.result?.length > 0) {
@@ -118,23 +121,28 @@ export default function SearchParams() {
 
                         setResults(results);
                     } else {
-                        setError("Ничего не найдено");
+                        showNotification('Ничего не найденно :(', 'warning')
                     }
                     break;
 
                 case "film":
+                    showNotification('Поиск фильма по кадру в разработке', 'info')
+                    break;
                 case "serial":
+                    showNotification('Поиск сериала по кадру в разработке', 'info')
+                    break;
                 case "music":
-                    formData.append("music", file); 
-                    console.log(file, file instanceof File); 
-                    response = await fetch("http://185.237.95.6:5000/api/search_music", {
+                    formData.append("music", file);
+                    console.log(file, file instanceof File);
+                    response = await fetch(`${API_URL}:5000/api/search_music`, {
                         method: "POST",
                         body: formData
                     });
-
                     if (!response.ok) {
-                        throw new Error("Ошибка при поиске данных");
+                        showNotification(`${data.error}`, 'error')
+                        return
                     }
+
 
                     data = await response.json();
                     console.log(data);
@@ -151,7 +159,7 @@ export default function SearchParams() {
                     break;
             }
         } catch (err) {
-            setError(err instanceof Error ? err.message : "Произошла ошибка при поиске");
+            showNotification('Ошибка при поиске', 'error')
         } finally {
             setIsLoading(false);
         }
@@ -171,7 +179,7 @@ export default function SearchParams() {
                 <div className="button_group">
                     <button
                         className={fileType === 'anime' ? 'ActiveButton' : 'noActiveButton'}
-                        onClick={() => {setFileType("anime"), clearResults()}}
+                        onClick={() => { setFileType("anime"), clearResults() }}
                         disabled={isLoading}
                     >
                         <img src="/rei_ayanami.svg" alt="anime" />
@@ -179,7 +187,7 @@ export default function SearchParams() {
                     </button>
                     <button
                         className={fileType === 'music' ? 'ActiveButton' : 'noActiveButton'}
-                        onClick={() => {setFileType("music"), clearResults()}}
+                        onClick={() => { setFileType("music"), clearResults() }}
                         disabled={isLoading}
                     >
                         <img src="/nirvana.png" alt="music" />
@@ -187,7 +195,7 @@ export default function SearchParams() {
                     </button>
                     <button
                         className={fileType === 'film' ? 'ActiveButton' : 'noActiveButton'}
-                        onClick={() => {setFileType("film"), clearResults()}}
+                        onClick={() => { setFileType("film"), clearResults() }}
                         disabled={isLoading}
                     >
                         <img src="/iron_man.png" alt="film" />
@@ -195,7 +203,7 @@ export default function SearchParams() {
                     </button>
                     <button
                         className={fileType === 'serial' ? 'ActiveButton' : 'noActiveButton'}
-                        onClick={() => {setFileType("serial"), clearResults()}}
+                        onClick={() => { setFileType("serial"), clearResults() }}
                         disabled={isLoading}
                     >
                         <img src="/walter_weiht.png" alt="serial" />

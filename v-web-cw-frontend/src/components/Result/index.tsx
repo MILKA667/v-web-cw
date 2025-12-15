@@ -2,9 +2,12 @@ import './style.css'
 import { ResultContext } from '../../contexts/ResultContext'
 import { useContext, useState, useRef } from 'react'
 import FileTypeContext from '../../contexts/FileTypeContext'
+import { useNotification } from '../../contexts/NotificationContext'
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Result() {
     const token = localStorage.getItem("token");
+    const {showNotification} = useNotification();
     const { results } = useContext(ResultContext)!
     const { fileType } = useContext(FileTypeContext)!
     const [playingVideoIndex, setPlayingVideoIndex] = useState<number | null>(null)
@@ -51,7 +54,7 @@ function Result() {
     }
 
     async function addLike(title: string, image: string | undefined, anime_id: number | undefined) {
-        const res = await fetch("http://185.237.95.6:5000/api/add_like", {
+        const res = await fetch(`${API_URL}:5000/api/add_like`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${token}`
@@ -60,6 +63,10 @@ function Result() {
             body: JSON.stringify({ title, image, anime_id })
         })
         const data = await res.json();
+        if (!res.ok) {
+            showNotification(`${data.error}`, 'error')
+            return
+        }
         console.log(data);
     }
 
@@ -69,7 +76,7 @@ function Result() {
         previewUrl?: string | null,
         artist?: string
     ) {
-        const res = await fetch("http://185.237.95.6:5000/api/add_music_like", {
+        const res = await fetch(`${API_URL}:5000/api/add_music_like`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${token}`

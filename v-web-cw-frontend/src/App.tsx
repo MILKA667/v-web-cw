@@ -8,6 +8,7 @@ import ProtectedRoute from './components/ProtectedRoute'
 import ProfilePage from './pages/Profile'
 import { Outlet } from 'react-router-dom'
 import Like from './pages/Like'
+import { NotificationProvider } from './contexts/NotificationContext'
 
 function MainLayout() {
   return (
@@ -22,6 +23,7 @@ function MainLayout() {
 
 function App() {
   return (
+    <NotificationProvider>
     <ResultProvider>
       <BrowserRouter>
         <Routes>
@@ -35,6 +37,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </ResultProvider>
+    </NotificationProvider>
   )
 }
 

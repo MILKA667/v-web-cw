@@ -74,11 +74,11 @@ def register():
     except DatabaseError as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': 'Database error: ' + str(e)}), 400
+        return jsonify({'error': 'Ошибка БД: ' + str(e)}), 400
     except Exception as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': 'Server error: ' + str(e)}), 500
+        return jsonify({'error': 'Ошибка сервера: ' + str(e)}), 500
     finally:
         if cur:
             cur.close()
@@ -121,11 +121,11 @@ def login():
     except DatabaseError as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': 'Database error: ' + str(e)}), 400
+        return jsonify({'error': 'Ошибка БД: ' + str(e)}), 400
     except Exception as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': 'Server error: ' + str(e)}), 500
+        return jsonify({'error': 'Ошибка сервера: ' + str(e)}), 500
     finally:
         if cur:
             cur.close()
@@ -161,12 +161,12 @@ def add_like():
     except DatabaseError as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': f'Database error: {str(e)}'}), 400
+        return jsonify({'error': f'Ошибка БД: {str(e)}'}), 400
 
     except Exception as e:
         if conn:
             conn.rollback()
-        return jsonify({'error': f'Server error: {str(e)}'}), 500
+        return jsonify({'error': f'Ошибка сервера: {str(e)}'}), 500
 
     finally:
         if cur:
@@ -235,7 +235,6 @@ def get_likes():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # ===== АНИМЕ =====
         cur.execute("""
             SELECT anime_external_id, anime_title, anime_image
             FROM likes
@@ -253,7 +252,6 @@ def get_likes():
             for row in anime_rows
         ]
 
-        # ===== МУЗЫКА =====
         cur.execute("""
             SELECT title, artist, image, preview_url
             FROM music
@@ -297,10 +295,8 @@ def search_music():
     if not file:
         return {"error": "Файл не получен"}, 400
 
-    # Используем безопасное ASCII-имя
     safe_filename = "recording.wav"
     
-    # Читаем весь WAV-файл в память
     file_bytes = file.read()
 
     files = {
@@ -310,7 +306,6 @@ def search_music():
     headers = {
         "x-rapidapi-key": "0dfb86a649msh359b1562cef5454p1f01f1jsnde7b1c1bd90c",
         "x-rapidapi-host": "shazam-core.p.rapidapi.com"
-        # НЕ указываем Content-Type, requests сам ставит multipart/form-data
     }
 
     try:

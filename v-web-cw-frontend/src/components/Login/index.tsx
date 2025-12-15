@@ -1,9 +1,12 @@
 import { useState } from "react";
 import './style.css'
+import { useNotification } from "../../contexts/NotificationContext";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function Login() {
+    const {showNotification} = useNotification();
     async function login(email: string, password: string) {
-        const res = await fetch("http://185.237.95.6:5000/api/login", {
+        const res = await fetch(`${API_URL}:5000/api/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ email, password }),
@@ -16,7 +19,7 @@ function Login() {
             localStorage.setItem("nickname", data.username)
             window.location.href = "/";
         } else {
-            alert("Неверный логин или пароль");
+            showNotification('Неверный логин или пароль', 'error')
         }
     }
 

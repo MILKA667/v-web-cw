@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import './style.css';
 
 export default function Like() {
+    const API_URL = import.meta.env.VITE_API_URL;
     type FileType = 'film' | 'serial' | 'anime' | 'music';
 
     const [filetype, setFileType] = useState<FileType>('anime');
@@ -12,7 +13,7 @@ export default function Like() {
 
     useEffect(() => {
         async function load() {
-            const res = await fetch("http://185.237.95.6:5000/api/get_likes", {
+            const res = await fetch(`${API_URL}:5000/api/get_likes`, {
                 headers: {
                     'Content-Type': 'application/json',
                     "Authorization": `Bearer ${token}`,
