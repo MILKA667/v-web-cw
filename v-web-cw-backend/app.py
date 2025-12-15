@@ -84,14 +84,52 @@ def register():
         if conn:
             conn.close()
 
-@app.route("/api/login", methods=["GET", "POST"])
+@app.route('/api/login', methods=['POST'])
 def login():
-    if request.method == "GET":
-        return jsonify({"status": "API OK"}), 200
+    
+    data = request.get_json()  
+    email = data.get('email')
+    password = data.get('password')
 
-    data = request.get_json()
-    return jsonify({"success": True, "data": data}), 200
-
+    conn = None
+    cur = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        
+        cur.execute("SELECT id, password, username FROM users WHERE email = %s", (email,))
+        user = cur.fetchone() 
+        if user and user[1] == password:
+            token = jwt.encode({
+                'user_id': user[0],
+                'email': email,
+            }, app.config['SECRET_KEY'], algorithm='HS256')
+            
+            if isinstance(token, bytes):
+                token = token.decode('utf-8')
+                
+            return jsonify({
+                'message': 'Успешный вход',
+                'token': token,
+                'user_id': user[0],
+                'username': user[2]
+            }), 200
+        else:
+            return jsonify({"error": "Неверный пароль или почта"}), 401
+        
+    except DatabaseError as e:
+        if conn:
+            conn.rollback()
+        return jsonify({'error': 'Ошибка БД: ' + str(e)}), 400
+    except Exception as e:
+        if conn:
+            conn.rollback()
+        return jsonify({'error': 'Ошибка сервера: ' + str(e)}), 500
+    finally:
+        if cur:
+            cur.close()
+        if conn:
+            conn.close()
 @app.route('/api/add_like', methods=['POST'])
 def add_like():
     data = request.get_json()
