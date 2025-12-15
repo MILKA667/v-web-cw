@@ -3,7 +3,6 @@ import { ResultContext } from '../../contexts/ResultContext'
 import { useContext, useState, useRef } from 'react'
 import FileTypeContext from '../../contexts/FileTypeContext'
 import { useNotification } from '../../contexts/NotificationContext'
-const API_URL = import.meta.env.VITE_API_URL;
 
 function Result() {
     const token = localStorage.getItem("token");
@@ -54,7 +53,7 @@ function Result() {
     }
 
     async function addLike(title: string, image: string | undefined, anime_id: number | undefined) {
-        const res = await fetch(`${API_URL}:5000/api/add_like`, {
+        const res = await fetch(`/api/add_like`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${token}`
@@ -76,7 +75,7 @@ function Result() {
         previewUrl?: string | null,
         artist?: string
     ) {
-        const res = await fetch(`${API_URL}:5000/api/add_music_like`, {
+        const res = await fetch(`/api/add_music_like`, {
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${token}`

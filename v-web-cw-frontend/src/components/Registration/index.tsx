@@ -1,12 +1,11 @@
 import { useState } from "react";
 import { useNotification } from "../../contexts/NotificationContext";
-const API_URL = import.meta.env.VITE_API_URL;
 
 function Registration() {
     const { showNotification } = useNotification();
 
     async function register(email: string, password: string, username: string) {
-        const res = await fetch(`${API_URL}:5000/api/register`, {
+        const res = await fetch(`/api/register`, {
             headers: {
                 'Content-Type': 'application/json',
             },

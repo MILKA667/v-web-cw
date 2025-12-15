@@ -5,7 +5,6 @@ import { ResultContext, type Result } from "../../contexts/ResultContext";
 import FileTypeContext from "../../contexts/FileTypeContext";
 import { useNotification } from "../../contexts/NotificationContext";
 
-const API_URL = import.meta.env.VITE_API_URL;
 
 export default function SearchParams() {
     const { showNotification } = useNotification();
@@ -134,7 +133,7 @@ export default function SearchParams() {
                 case "music":
                     formData.append("music", file);
                     console.log(file, file instanceof File);
-                    response = await fetch(`${API_URL}:5000/api/search_music`, {
+                    response = await fetch(`/api/search_music`, {
                         method: "POST",
                         body: formData
                     });
