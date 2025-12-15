@@ -21,8 +21,6 @@ export default function LoginPage() {
                 </div>
 
             </div>
-            <div className="tenor-gif-embed" data-postid="25645663" data-share-method="host" data-aspect-ratio="1" data-width="100%"><a href="https://tenor.com/view/hot-dog-gif-25645663">Hot Dog Sticker</a>from <a href="https://tenor.com/search/hot+dog-stickers">Hot Dog Stickers</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
         </div>
-
     )
 }

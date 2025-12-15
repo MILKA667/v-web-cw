@@ -10,8 +10,7 @@ app = Flask(__name__)
 CORS(app)
 
 RAPIDAPI_HOST = "shazam-core.p.rapidapi.com"
-RAPIDAPI_KEY = "временно пока тещу сайт чтобы не тыкал никто а то не хватит бляха"
-KEYS =  "0dfb86a649msh359b1562cef5454p1f01f1jsnde7b1c1bd90c" 
+RAPIDAPI_KEY = "0dfb86a649msh359b1562cef5454p1f01f1jsnde7b1c1bd90c"
 SHZAM_API_URL = "https://shazam-core.p.rapidapi.com/v1/tracks/recognize"
 
 app.config['SECRET_KEY'] = 'sisichkipisichki' 
