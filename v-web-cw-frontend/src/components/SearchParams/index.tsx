@@ -82,12 +82,11 @@ export default function SearchParams() {
             let data: any;
             switch (fileType) {
                 case "anime":
-                    showNotification('Поиск аниме не доступен с российским IP', 'info')
                     formData.append("image", file);
-                    response = await fetch("https://api.trace.moe/search", {
-                        method: "POST",
-                        body: formData
-                    });
+                    response = await fetch("/api/search_anime", {
+                    method: "POST",
+                    body: formData
+                });
                     data = await response.json();
                     if (!response.ok) {
                         showNotification(`${data.error}`, 'error')
