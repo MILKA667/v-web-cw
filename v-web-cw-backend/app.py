@@ -286,6 +286,38 @@ def get_likes():
 
 
 
+@app.route("/api/search_anime", methods=["POST"])
+def search_anime():
+    file = request.files.get("image")
+    if not file:
+        return {"error": "Файл не получен"}, 400
+
+    image_bytes = file.read()
+
+    files = {
+        "image": ("image.jpg", image_bytes, file.mimetype)
+    }
+
+    try:
+        response = requests.post(
+            "https://api.trace.moe/search",
+            files=files,
+            timeout=30
+        )
+        response.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        return {
+            "error": "HTTP ошибка trace.moe",
+            "details": str(e),
+            "response": response.text
+        }, response.status_code
+    except Exception as e:
+        return {
+            "error": "Ошибка при запросе к trace.moe",
+            "details": str(e)
+        }, 500
+
+    return jsonify(response.json())
 
 @app.route("/api/search_music", methods=["POST"])
 def search_music():
